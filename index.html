@@ -95,6 +95,29 @@
   #desk.scatter { display: block; position: relative; width: calc(100vw - 32px); margin-left: calc(50% - 50vw + 16px); }
   #desk.scatter .win { position: absolute; left: 0; top: 0; width: min(540px, 80%); max-height: min(520px, 65vh); display: flex; flex-direction: column; }
   #desk.scatter .win .body { overflow: auto; overscroll-behavior: contain; } /* tall windows scroll inside, like real ones */
+  /* Vista-style scrollbar (custom, since Firefox can't skin native ones); native bar hidden */
+  #desk.scatter .win .body { scrollbar-width: none; }
+  #desk.scatter .win .body::-webkit-scrollbar { display: none; }
+  .vscroll { display: none; position: absolute; right: 0; bottom: 0; width: 17px; flex-direction: column;
+    background: linear-gradient(90deg, #e3ebf3, #f6f9fc 50%, #e3ebf3); border-left: 1px solid #c9d6e2; user-select: none; }
+  .win.scrolls .vscroll { display: flex; }
+  .win.scrolls .body { padding-right: 40px; }
+  .vscroll button, .vscroll .thumb {
+    border: 1px solid #8ea5bd; border-radius: 3px; margin: 0 1px; padding: 0;
+    background: linear-gradient(90deg, #f7fbfe 0%, #e2eef8 45%, #c4dcef 50%, #d8e8f5 100%);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.75);
+  }
+  .vscroll button { height: 17px; flex: none; color: #4d6185; font-size: 7px; line-height: 1; cursor: default; }
+  .vscroll button:hover, .vscroll .thumb:hover, .vscroll .thumb.held {
+    border-color: #3c7fb1; background: linear-gradient(90deg, #eaf6fd 0%, #d9f0fc 45%, #a8dbf6 50%, #bde5f9 100%);
+  }
+  .vscroll .track { flex: 1; position: relative; margin: 1px 0; }
+  .vscroll .thumb { position: absolute; left: 0; right: 0; top: 0; }
+  .vscroll .thumb::after { /* grip lines */
+    content: ""; position: absolute; left: 4px; right: 4px; top: 50%; height: 7px; transform: translateY(-50%);
+    background: repeating-linear-gradient(180deg, #5b7593 0 1px, #fff 1px 2px, transparent 2px 3px);
+    opacity: .7;
+  }
   #desk.scatter #work, #desk.scatter #side { width: min(720px, 90%); }
   .win.dragging { z-index: 10; box-shadow: 0 24px 60px rgba(60,10,90,.45), 0 0 0 2px #3ff0ff; opacity: .96; }
   .titlebar {
@@ -441,8 +464,50 @@
     if (w) { w.classList.remove('closed', 'min'); raise(w); }
   }));
   document.getElementById('reset').onclick = () => { wins.forEach(w => w.classList.remove('min', 'closed')); scatter(); };
+  // Vista scrollbars: one per window, synced with the window body's scroll position
+  const syncs = wins.map(w => {
+    const body = w.querySelector('.body'), tb = w.querySelector('.titlebar');
+    const vs = document.createElement('div');
+    vs.className = 'vscroll'; vs.setAttribute('aria-hidden', 'true');
+    vs.innerHTML = '<button type="button" tabindex="-1">▲</button><div class="track"><div class="thumb"></div></div><button type="button" tabindex="-1">▼</button>';
+    w.append(vs);
+    const [up, down] = vs.querySelectorAll('button'), track = vs.querySelector('.track'), thumb = vs.querySelector('.thumb');
+    const room = () => track.clientHeight - thumb.offsetHeight;
+    function sync() {
+      const { scrollHeight: sh, clientHeight: ch, scrollTop: st } = body;
+      const on = !w.classList.contains('min') && sh > ch + 1;
+      w.classList.toggle('scrolls', on);
+      if (!on) return;
+      vs.style.top = tb.offsetHeight + 'px';
+      thumb.style.height = Math.max(24, track.clientHeight * ch / sh) + 'px';
+      thumb.style.transform = `translateY(${room() * st / (sh - ch)}px)`;
+    }
+    body.addEventListener('scroll', sync);
+    new ResizeObserver(sync).observe(body);
+    up.onclick = () => body.scrollBy({ top: -60, behavior: 'smooth' });
+    down.onclick = () => body.scrollBy({ top: 60, behavior: 'smooth' });
+    track.addEventListener('pointerdown', e => { // click the track: page up/down
+      if (e.target !== track) return;
+      const below = e.clientY > thumb.getBoundingClientRect().top;
+      body.scrollBy({ top: (below ? 1 : -1) * body.clientHeight * .9, behavior: 'smooth' });
+    });
+    thumb.addEventListener('pointerdown', e => { // drag the thumb
+      const y0 = e.clientY, st0 = body.scrollTop;
+      thumb.setPointerCapture(e.pointerId); thumb.classList.add('held');
+      const move = ev => { body.scrollTop = st0 + (ev.clientY - y0) * (body.scrollHeight - body.clientHeight) / Math.max(1, room()); };
+      const up = () => { thumb.classList.remove('held'); thumb.removeEventListener('pointermove', move); };
+      thumb.addEventListener('pointermove', move);
+      thumb.addEventListener('pointerup', up, { once: true });
+      thumb.addEventListener('pointercancel', up, { once: true });
+    });
+    return sync;
+  });
+  const syncAll = () => syncs.forEach(f => f());
+  btn.addEventListener('click', syncAll);        // language switch changes content height
+  desk.addEventListener('click', syncAll);       // minimise / restore
   wide.addEventListener('change', scatter); // ponytail: no re-scatter on plain resize; "shuffle" handles it
   scatter();
+  syncAll();
 </script>
 </body>
 </html>
