@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en" data-l="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catalina Londoño Cuéllar</title>
+<meta name="description" content="Creative technologist: tangible programming languages, generative sound, light and computational creativity.">
+<style>
+  :root {
+    --ink: #2a1450; --ink-soft: #5a3f86; --accent: #c2188f; --cyan: #01b8e6; --pink: #ff71ce;
+    --glass: rgba(255,255,255,.5); --glass-edge: rgba(255,255,255,.9);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; color: var(--ink); min-height: 100vh; overflow-x: hidden;
+    font: 17px/1.6 "Segoe UI", Frutiger, "Frutiger Linotype", "Myriad Pro", "Helvetica Neue", Arial, sans-serif;
+    /* frutiger sky melting into a vaporwave sunset */
+    background: linear-gradient(180deg, #7ad7ff 0%, #a9b8ff 30%, #e7a6f0 55%, #ff9ac9 68%, #ffc29a 75%, #2b0f4c 75.2%, #1a0833 100%) fixed;
+  }
+  a { color: var(--accent); }
+
+  /* synthwave scenery: striped sun + neon grid floor */
+  .scene { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .sun {
+    position: absolute; left: 50%; top: 75%; width: min(46vw, 420px); aspect-ratio: 1; transform: translate(-50%, -100%);
+    border-radius: 50%; background: linear-gradient(180deg, #fff27a 0%, #ffb347 40%, #ff5fa2 75%);
+    -webkit-mask: repeating-linear-gradient(180deg, #000 0 14px, transparent 14px 18px) bottom / 100% 45% no-repeat, linear-gradient(#000, #000) top / 100% 55% no-repeat;
+            mask: repeating-linear-gradient(180deg, #000 0 14px, transparent 14px 18px) bottom / 100% 45% no-repeat, linear-gradient(#000, #000) top / 100% 55% no-repeat;
+    filter: drop-shadow(0 0 40px rgba(255,95,162,.7));
+  }
+  .floor {
+    position: absolute; left: -50%; right: -50%; top: 75%; height: 60%;
+    background:
+      linear-gradient(0deg, transparent 0 calc(100% - 2px), var(--pink) calc(100% - 2px)) 0 0 / 100% 40px,
+      linear-gradient(90deg, transparent 0 calc(100% - 2px), #3ff0ff calc(100% - 2px)) 0 0 / 60px 100%;
+    transform: perspective(300px) rotateX(60deg); transform-origin: top;
+    animation: drive 2s linear infinite; opacity: .85;
+  }
+  @keyframes drive { to { background-position: 0 40px, 0 0; } }
+  /* floating bubbles */
+  .scene span {
+    position: absolute; bottom: -120px; border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #fff 0 8%, rgba(255,255,255,.35) 20%, rgba(255,150,230,.18) 60%, rgba(150,240,255,.5) 100%);
+    box-shadow: inset 0 0 12px rgba(255,255,255,.8);
+    animation: rise linear infinite;
+  }
+  @keyframes rise { to { transform: translateY(-120vh) translateX(30px); } }
+  @media (prefers-reduced-motion: reduce) { .scene span { display: none; } .floor { animation: none; } }
+
+  main { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; padding: 24px 16px 64px; }
+  .glass {
+    background: linear-gradient(180deg, rgba(255,255,255,.78), var(--glass) 45%, rgba(255,255,255,.38));
+    border: 1px solid var(--glass-edge); border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(60,10,90,.25), 0 0 0 1px rgba(255,113,206,.15), inset 0 1px 0 #fff;
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  }
+
+  nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 16px; margin-bottom: 28px; }
+  nav div { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+  nav a { color: var(--ink); text-decoration: none; font: 600 .9rem/1.4 Consolas, "Lucida Console", monospace; }
+  nav a:hover { color: var(--accent); }
+  .pill {
+    border: 1px solid rgba(255,255,255,.9); border-radius: 999px; padding: 6px 16px; cursor: pointer;
+    font: inherit; font-weight: 600; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,.3);
+    background: linear-gradient(180deg, #9ff3ff 0%, #2bc8f0 50%, #01a6d6 51%, #3fd6fb 100%);
+    box-shadow: 0 3px 10px rgba(1,166,214,.4), inset 0 1px 0 rgba(255,255,255,.8);
+    text-decoration: none; display: inline-block;
+  }
+  .pill.hot { background: linear-gradient(180deg, #ffc6ec 0%, #ff71ce 50%, #e0389f 51%, #ff7fd4 100%); box-shadow: 0 3px 10px rgba(224,56,159,.45), inset 0 1px 0 rgba(255,255,255,.8); }
+
+  header { display: grid; grid-template-columns: 200px 1fr; gap: 28px; align-items: center; padding: 28px; }
+  .avatar {
+    width: 200px; height: 200px; border-radius: 50%; overflow: hidden;
+    border: 4px solid #fff; box-shadow: 0 0 0 4px var(--pink), 0 0 30px rgba(63,240,255,.8);
+  }
+  /* --zoom: how far to zoom into the photo; it zooms from the top so the face stays in frame */
+  .avatar img {
+    width: 100%; height: 100%; object-fit: cover; object-position: top; display: block;
+    --zoom: 1.2; transform: scale(var(--zoom)); transform-origin: 50% 15%;
+  }
+  h1 { font-size: 2.4rem; line-height: 1.1; margin: 0; font-weight: 300; letter-spacing: -.5px; }
+  h1 b {
+    font-weight: 800; background: linear-gradient(180deg, #01b8e6 0%, #7b2ff7 50%, #ff2fa8 51%, #ff9a5a 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .jp { margin: 2px 0 10px; letter-spacing: .5em; font-size: .9rem; color: var(--accent); }
+  .intro { margin: 0 0 16px; font-size: 1.1rem; }
+
+  /* desktop windows */
+  #desk { display: flex; flex-direction: column; gap: 32px; margin-top: 32px; }
+  .win { overflow: hidden; scroll-margin-top: 16px; position: relative; }
+  /* windows are near-opaque so overlapping text doesn't bleed through */
+  .win.glass { background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,240,252,.9)); }
+  /* cluttered desktop (wide screens): full-width desk, windows absolutely placed by JS */
+  #desk.scatter { display: block; position: relative; width: calc(100vw - 32px); margin-left: calc(50% - 50vw + 16px); }
+  #desk.scatter .win { position: absolute; left: 0; top: 0; width: min(540px, 80%); max-height: min(520px, 65vh); display: flex; flex-direction: column; }
+  #desk.scatter .win .body { overflow: auto; overscroll-behavior: contain; } /* tall windows scroll inside, like real ones */
+  #desk.scatter #work, #desk.scatter #side { width: min(720px, 90%); }
+  .win.dragging { z-index: 10; box-shadow: 0 24px 60px rgba(60,10,90,.45), 0 0 0 2px #3ff0ff; opacity: .96; }
+  .titlebar {
+    display: flex; align-items: center; gap: 10px; padding: 8px 10px 8px 12px; cursor: grab; touch-action: none; user-select: none;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,.15) 50%, rgba(255,255,255,0) 51%, rgba(255,255,255,.2) 100%),
+      linear-gradient(90deg, #ff71ce, #b967ff 50%, #01cdfe);
+    color: #fff; text-shadow: 0 1px 2px rgba(60,0,80,.5);
+    font: 600 .95rem/1.3 Consolas, "Lucida Console", monospace;
+  }
+  .titlebar:focus-visible { outline: 3px solid #fff27a; outline-offset: -3px; }
+  .dragging .titlebar { cursor: grabbing; }
+  .titlebar .btns { margin-left: auto; display: flex; gap: 5px; }
+  .titlebar button {
+    width: 24px; height: 20px; border-radius: 5px; padding: 0; cursor: pointer; color: #fff; font: 700 .75rem/1 sans-serif;
+    border: 1px solid rgba(255,255,255,.85); background: linear-gradient(180deg, rgba(255,255,255,.6), rgba(255,255,255,.15));
+  }
+  .titlebar button[data-act="close"] { background: linear-gradient(180deg, #ffb3a8, #e2432f 55%, #f0705c); }
+  .win.min .body { display: none; }
+  .win.closed { display: none; }
+  .body { padding: 22px 26px; }
+  .body > p:first-child { margin-top: 0; }
+  .body > p:last-child { margin-bottom: 0; }
+  .big { font-size: 1.3rem; font-weight: 300; color: var(--accent); line-height: 1.45; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  .card {
+    padding: 18px 20px; display: flex; flex-direction: column; border-radius: 14px;
+    background: rgba(255,255,255,.6); border: 1px solid #fff; box-shadow: 0 4px 14px rgba(60,10,90,.14);
+  }
+  .card h3 { margin: 0 0 4px; font-size: 1.2rem; color: #7b2ff7; }
+  .card .kind { font-size: .75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); font-weight: 700; margin-bottom: 6px; }
+  .card p { margin: 0 0 14px; flex: 1; }
+  .card .links a { margin: 0 8px 6px 0; font-size: .85rem; padding: 4px 12px; }
+
+  .playlist { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 8px; }
+  .playlist li { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .playlist b { min-width: 9.5em; font-size: .85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--ink-soft); }
+  .bubble {
+    padding: 2px 12px; border-radius: 999px; font-size: .9rem;
+    background: radial-gradient(circle at 30% 20%, #fff, #ffe0f5 55%, #c9f4ff); border: 1px solid #fff;
+    box-shadow: 0 2px 8px rgba(185,103,255,.25);
+  }
+
+  .mail-head { font: .9rem/1.6 Consolas, "Lucida Console", monospace; color: var(--ink-soft); border-bottom: 1px dashed rgba(42,20,80,.25); padding-bottom: 10px; margin-bottom: 14px; }
+  .note { font-size: .9rem; color: var(--ink-soft); margin-top: 18px; }
+  .hint { text-align: center; font: .85rem Consolas, "Lucida Console", monospace; color: #fff; text-shadow: 0 1px 3px rgba(60,0,80,.6); margin: 24px 0 -12px; }
+  .hint button { background: none; border: 0; color: #fff27a; text-decoration: underline; font: inherit; cursor: pointer; padding: 0; }
+  footer { text-align: center; margin-top: 48px; color: #f3d9ff; font-size: .9rem; }
+
+  /* language toggle: show only the active language */
+  html[data-l="en"] [lang="es"], html[data-l="es"] [lang="en"] { display: none !important; }
+
+  @media (max-width: 640px) {
+    header { grid-template-columns: 1fr; text-align: center; padding: 20px; }
+    .avatar { margin: 0 auto; width: 150px; height: 150px; }
+    h1 { font-size: 1.9rem; }
+    .body { padding: 18px; }
+    .playlist b { min-width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="scene" aria-hidden="true">
+  <div class="sun"></div><div class="floor"></div>
+  <span style="left:6%;width:60px;height:60px;animation-duration:22s"></span>
+  <span style="left:22%;width:24px;height:24px;animation-duration:16s;animation-delay:-6s"></span>
+  <span style="left:41%;width:90px;height:90px;animation-duration:30s;animation-delay:-12s"></span>
+  <span style="left:63%;width:36px;height:36px;animation-duration:19s;animation-delay:-3s"></span>
+  <span style="left:80%;width:70px;height:70px;animation-duration:26s;animation-delay:-18s"></span>
+  <span style="left:92%;width:20px;height:20px;animation-duration:14s;animation-delay:-9s"></span>
+</div>
+
+<main>
+  <nav class="glass">
+    <div>
+      <a href="#why">why.txt</a>
+      <a href="#me">my_computer/</a>
+      <a href="#work">projects/</a>
+      <a href="#music">now_playing.m3u</a>
+      <a href="#side">side_quests/</a>
+      <a href="#hi">new_message.eml</a>
+    </div>
+    <button class="pill" id="lang" type="button" aria-label="Cambiar a español / Switch to English">ES</button>
+  </nav>
+
+  <header class="glass">
+    <div class="avatar"><img src="img/clc.jpg" alt="Portrait of Catalina Londoño Cuéllar"></div>
+    <div>
+      <h1>Catalina <b>Londoño Cuéllar</b></h1>
+      <p class="jp" lang="ja" aria-hidden="true">カタリナ</p>
+      <p class="intro" lang="en">Hi! I'm a creative technologist from Bogotá. I build programming languages you can hold in your hands, music you write as code and machines that turn touch into light, all so computers feel a little less like a mystery and a little more like home.</p>
+      <p class="intro" lang="es">¡Hola! Soy tecnóloga creativa, de Bogotá. Construyo lenguajes de programación que se pueden sostener en la mano, música que se escribe como código y máquinas que convierten el tacto en luz, todo para que los computadores se sientan un poco menos como un misterio y un poco más como un hogar.</p>
+      <a class="pill" href="https://github.com/Darkoyd">GitHub</a>
+      <a class="pill hot" href="#hi"><span lang="en">Say hi</span><span lang="es">Saludar</span></a>
+    </div>
+  </header>
+
+  <p class="hint"><span lang="en">psst: it's a bit messy in here. Grab any window by its title bar and move it wherever you like ✦ </span><span lang="es">psst: esto está un poco desordenado. Agarra cualquier ventana por su barra de título y muévela a donde quieras ✦ </span><button type="button" id="reset"><span lang="en">shuffle</span><span lang="es">revolver</span></button></p>
+  <div id="desk">
+  <!-- why.txt -->
+  <section class="win glass" id="why">
+    <div class="titlebar" tabindex="0" title="Drag to move · arrow keys to nudge"><span class="ico">📄</span>why.txt<span class="btns"><button type="button" data-act="min" aria-label="Minimise">_</button><button type="button" data-act="max" aria-label="Restore">□</button><button type="button" data-act="close" aria-label="Close">×</button></span></div>
+    <div class="body">
+      <p class="big" lang="en">Fewer than 1% of people can write code, yet all of us live by it.</p>
+      <p lang="en">That's where writing stood before the printing press. A handful of scribes recorded laws, contracts and scripture, and everyone else lived with the results. The press didn't just copy books faster. It handed writing to everyone, and whole new ways of being human grew out of it: the novel, the pamphlet, the love letter.</p>
+      <p lang="en">Computing hasn't had its press yet. My work is a small attempt at one: making the machine legible, touchable and playful, so that more people get to speak its language instead of only being spoken to by it.</p>
+      <p class="big" lang="es">Menos del 1% de las personas sabe programar, pero todos vivimos según lo que dice el código.</p>
+      <p lang="es">Así estaba la escritura antes de la imprenta. Un puñado de escribas registraba leyes, contratos y escrituras sagradas, y todos los demás vivían con las consecuencias. La imprenta no solo copió libros más rápido. Le entregó la escritura a todo el mundo, y de ahí nacieron formas nuevas de ser humanos: la novela, el panfleto, la carta de amor.</p>
+      <p lang="es">La computación todavía no ha tenido su imprenta. Mi trabajo es un pequeño intento de construirla: hacer la máquina legible, tocable y juguetona, para que más gente pueda hablar su idioma en lugar de solo escucharla hablar.</p>
+    </div>
+  </section>
+
+  <!-- my_computer/ -->
+  <section class="win glass" id="me">
+    <div class="titlebar" tabindex="0" title="Drag to move · arrow keys to nudge"><span class="ico">🖥️</span>my_computer/<span class="btns"><button type="button" data-act="min" aria-label="Minimise">_</button><button type="button" data-act="max" aria-label="Restore">□</button><button type="button" data-act="close" aria-label="Close">×</button></span></div>
+    <div class="body">
+      <p lang="en">The first computer I could call mine was a Windows 95 tower that my dad rescued from his office on its way to the dump. I practically lived in MS Paint and Microsoft Picture It!, and somewhere between the spray-can tool and the clip art I learned that a cold, beige box could hold something warm. After that I needed to know how it worked.</p>
+      <p lang="en">Words were harder. As a kid I struggled with them, because people said things they didn't mean, or didn't know what they meant. So I started studying language as a way to understand the world, since every idea anyone has ever shared had to travel through one. Programming languages turned out to be the same thing with stricter rules. That's how I ended up studying Systems and Computing Engineering at Universidad de los Andes, deep in linguistics, language implementation and formal methods.</p>
+      <p lang="en">That kid with the paint bucket and that kid puzzling over words finally meet in <a href="#work">SCuLPT</a>.</p>
+      <p lang="es">El primer computador que pude llamar mío fue una torre con Windows 95 que mi papá rescató de su oficina cuando iba camino a la basura. Prácticamente vivía en MS Paint y Microsoft Picture It!, y en algún punto entre el aerosol y el clip art aprendí que una caja beige y fría podía guardar algo cálido. Después de eso necesitaba saber cómo funcionaba.</p>
+      <p lang="es">Las palabras eran más difíciles. De niña me costaban, porque la gente decía cosas que no sentía, o que no sabía qué significaban. Así que empecé a estudiar el lenguaje como una forma de entender el mundo, porque toda idea que alguien haya compartido tuvo que viajar a través de uno. Los lenguajes de programación resultaron ser lo mismo, con reglas más estrictas. Así terminé estudiando Ingeniería de Sistemas y Computación en la Universidad de los Andes, metida de lleno en la lingüística, la implementación de lenguajes y los métodos formales.</p>
+      <p lang="es">La niña del balde de pintura y la niña que se peleaba con las palabras por fin se encuentran en <a href="#work">SCuLPT</a>.</p>
+    </div>
+  </section>
+
+  <!-- projects/ -->
+  <section class="win glass" id="work">
+    <div class="titlebar" tabindex="0" title="Drag to move · arrow keys to nudge"><span class="ico">📁</span>projects/<span class="btns"><button type="button" data-act="min" aria-label="Minimise">_</button><button type="button" data-act="max" aria-label="Restore">□</button><button type="button" data-act="close" aria-label="Close">×</button></span></div>
+    <div class="body">
+      <div class="grid">
+        <article class="card">
+          <div class="kind"><span lang="en">Tangible language</span><span lang="es">Lenguaje tangible</span></div>
+          <h3>SCuLPT</h3>
+          <p lang="en">The Simple Cubic Language for Programming Tasks is a stack-based programming language built from 3D-printed blocks that snap together: computation you can hold. It was first presented as a poster at the 18th Colombian Computing Congress (18CCC, 2024), and SCuLPTER, its Scala.js environment, runs it in the browser.</p>
+          <p lang="es">Simple Cubic Language for Programming Tasks es un lenguaje de programación basado en pilas, construido con bloques impresos en 3D que encajan entre sí: computación que se puede sostener. Se presentó por primera vez como póster en el 18 Congreso Colombiano de Computación (18CCC, 2024), y SCuLPTER, su entorno en Scala.js, lo ejecuta en el navegador.</p>
+          <div class="links">
+            <a class="pill" href="https://github.com/Darkoyd/SCuLPT">SCuLPT</a>
+            <a class="pill hot" href="https://darkoyd.github.io/SCuLPTER/"><span lang="en">Try SCuLPTER</span><span lang="es">Probar SCuLPTER</span></a>
+            <!-- TODO: poster PDF -->
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="kind"><span lang="en">Generative music</span><span lang="es">Música generativa</span></div>
+          <h3>The Window</h3>
+          <p lang="en">A cabinet wall slowly fills with stickers, each one someone's mark. Every new sticker is photographed and folded into a long-form generative music piece that each listener renders on their own device.</p>
+          <p lang="es">Una pared de gabinete se llena de stickers con el tiempo, cada uno la huella de alguien. Cada sticker nuevo se fotografía y se integra a una pieza de música generativa de larga duración que cada oyente renderiza en su propio dispositivo.</p>
+          <div class="links"><a class="pill" href="https://github.com/Darkoyd/AWOMH">Repo</a></div>
+        </article>
+
+        <article class="card">
+          <div class="kind"><span lang="en">Light &amp; sound</span><span lang="es">Luz y sonido</span></div>
+          <h3>toqueteo2laser</h3>
+          <p lang="en">Touch, turn, tap or breathe on a box of sensors, and a laser draws and bends curves on the wall while every gesture becomes sound. Built with Bela, Trill sensors, SuperCollider and a Helios laser.</p>
+          <p lang="es">Toca, gira, golpea o respira sobre una caja de sensores, y un láser dibuja y dobla curvas en la pared mientras cada gesto se vuelve sonido. Hecho con Bela, sensores Trill, SuperCollider y un láser Helios.</p>
+          <div class="links"><a class="pill" href="https://github.com/Darkoyd/toqueteo2laser">Repo</a></div>
+        </article>
+
+        <article class="card">
+          <div class="kind"><span lang="en">Art + astrophysics</span><span lang="es">Arte + astrofísica</span></div>
+          <h3>Cosmic Organology</h3>
+          <p lang="en">An art and science project that turns DESI baryon acoustic oscillation data into sculpture, for the COSMOS 2027 exhibition. My role is integration: joining data and knowledge with creation.</p>
+          <p lang="es">Un proyecto de arte y ciencia que convierte datos de oscilaciones acústicas de bariones de DESI en escultura, para la exposición COSMOS 2027. Mi rol es la integración: unir datos y conocimiento con la creación.</p>
+          <div class="links"><a class="pill hot" href="https://cosmic.intervalo.space">cosmic.intervalo.space</a></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- now_playing.m3u -->
+  <section class="win glass" id="music">
+    <div class="titlebar" tabindex="0" title="Drag to move · arrow keys to nudge"><span class="ico">🎵</span>now_playing.m3u<span class="btns"><button type="button" data-act="min" aria-label="Minimise">_</button><button type="button" data-act="max" aria-label="Restore">□</button><button type="button" data-act="close" aria-label="Close">×</button></span></div>
+    <div class="body">
+      <p lang="en">My instrument is a laptop running Sonic Pi. I played live shows with the Computer Ensemble at Uniandes, and Sam Aaron's idea of code as something you <em>perform</em>, not just run, shaped how I think about everything on this page. Away from the keyboard I'm usually soldering microcontrollers, 3D printing odd little objects or pointing lasers at walls.</p>
+      <p lang="es">Mi instrumento es un portátil con Sonic Pi. Toqué en vivo con el Computer Ensemble de Uniandes, y la idea de Sam Aaron del código como algo que se <em>interpreta</em>, no solo se ejecuta, marcó cómo pienso todo lo que hay en esta página. Lejos del teclado, casi siempre estoy soldando microcontroladores, imprimiendo en 3D objetos raros o apuntando láseres a las paredes.</p>
+      <ul class="playlist">
+        <li><b><span lang="en">On repeat</span><span lang="es">En repetición</span></b><span class="bubble">Daft Punk</span><span class="bubble">New Order</span><span class="bubble">Giorgio Moroder</span><span class="bubble">Wendy Carlos</span></li>
+        <li><b><span lang="en">Looking at</span><span lang="es">Mirando</span></b><span class="bubble">vaporwave</span><span class="bubble"><span lang="en">plunderphonics</span><span lang="es">plunderfonía</span></span><span class="bubble"><span lang="en">surrealism</span><span lang="es">surrealismo</span></span><span class="bubble">Dada</span><span class="bubble">kitsch</span></li>
+        <li><b><span lang="en">Coding with</span><span lang="es">Programando con</span></b><span class="bubble">Sonic Pi</span><span class="bubble">SuperCollider</span><span class="bubble">Bela</span><span class="bubble">Scala.js</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- side_quests/ -->
+  <section class="win glass" id="side">
+    <div class="titlebar" tabindex="0" title="Drag to move · arrow keys to nudge"><span class="ico">🗺️</span>side_quests/<span class="btns"><button type="button" data-act="min" aria-label="Minimise">_</button><button type="button" data-act="max" aria-label="Restore">□</button><button type="button" data-act="close" aria-label="Close">×</button></span></div>
+    <div class="body">
+      <p lang="en">I've worked as a software engineer since 2019, and today that work is at GU, in the non-profit sector. It keeps the lights on. The quests below keep me going.</p>
+      <p lang="es">Trabajo como ingeniera de software desde 2019, y hoy ese trabajo es en GU, en el sector sin ánimo de lucro. Eso paga las cuentas. Las misiones de abajo son las que me mueven.</p>
+      <div class="grid">
+        <article class="card" id="venture">
+          <div class="kind">CTO</div>
+          <h3>alGramo</h3>
+          <p lang="en">A Bogotá startup: eat exactly how you like it, down to the last gram. Customers build their bowls ingredient by ingredient, with live nutrition tracking. I build the whole system, from the ordering app to the kitchen dashboard and the cloud underneath.</p>
+          <p lang="es">Un emprendimiento bogotano: come exactamente como te gusta, hasta el último gramo. Cada cliente arma su bowl ingrediente por ingrediente, con seguimiento nutricional en vivo. Construyo todo el sistema, desde la app de pedidos hasta el panel de cocina y la nube que lo sostiene.</p>
+          <div class="links"><a class="pill hot" href="https://algramo.app">algramo.app</a></div>
+        </article>
+        <article class="card">
+          <div class="kind">TTRPG · Dungeon Master</div>
+          <h3>Chronics of the Times Before</h3>
+          <p lang="en">Cylostra is my Eberron-inspired D&amp;D 5e world, with three moons, a fifteen-month calendar and too many factions. I run it for my players, and I write far too much code so that my prep is lighter and their sessions are a little more magical.</p>
+          <p lang="es">Cylostra es mi mundo de D&amp;D 5e inspirado en Eberron, con tres lunas, un calendario de quince meses y demasiadas facciones. Lo dirijo para mis jugadores, y escribo muchísimo código para que mi preparación sea más liviana y sus sesiones un poco más mágicas.</p>
+          <div class="links">
+            <a class="pill" href="https://github.com/Chronics-Obsidian-Vaults/Public"><span lang="en">Player wiki</span><span lang="es">Wiki de jugadores</span></a>
+            <a class="pill" href="https://github.com/Darkoyd/DMV2Statblock">DMV2Statblock</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="kind"><span lang="en">Writing</span><span lang="es">Escritura</span></div>
+          <h3>Chronics of the Aftertimes</h3>
+          <p lang="en">Stories from a far-future society after the space age, told by the computer terminal that keeps them.</p>
+          <p lang="es">Historias de una sociedad del futuro lejano, posterior a la era espacial, contadas por la terminal de computador que las guarda.</p>
+          <div class="links">
+            <a class="pill" href="https://github.com/Darkoyd/ChronicsOfTheAftertimes">Terminal</a>
+            <a class="pill" href="https://github.com/Darkoyd/ChronicsOfTheAftertimesContent"><span lang="en">Stories</span><span lang="es">Historias</span></a>
+          </div>
+        </article>
+      </div>
+      <p class="note" lang="en">I speak Spanish and English, and I'm slowly levelling up my Japanese (一生懸命がんばります!).</p>
+      <p class="note" lang="es">Hablo español e inglés, y poco a poco voy subiendo de nivel mi japonés (一生懸命がんばります!).</p>
+    </div>
+  </section>
+
+  <!-- new_message.eml -->
+  <section class="win glass" id="hi">
+    <div class="titlebar" tabindex="0" title="Drag to move · arrow keys to nudge"><span class="ico">✉️</span>new_message.eml<span class="btns"><button type="button" data-act="min" aria-label="Minimise">_</button><button type="button" data-act="max" aria-label="Restore">□</button><button type="button" data-act="close" aria-label="Close">×</button></span></div>
+    <div class="body">
+      <div class="mail-head">
+        <span lang="en">To: Catalina<br>Subject: Let's make something!</span>
+        <span lang="es">Para: Catalina<br>Asunto: ¡Hagamos algo!</span>
+      </div>
+      <p lang="en">An installation, a performance, a strange little language, a tool that makes computing kinder: if any of that sounds like your kind of thing, write to me. I'd love to build it with you.</p>
+      <p lang="es">Una instalación, un performance, un lenguaje raro, una herramienta que haga la computación más amable: si algo de eso suena a lo tuyo, escríbeme. Me encantaría construirlo contigo.</p>
+      <a class="pill hot" href="https://github.com/Darkoyd"><span lang="en">Send ➜</span><span lang="es">Enviar ➜</span></a><!-- TODO: mailto: link -->
+    </div>
+  </section>
+
+  </div>
+
+  <footer>© 2026 Catalina Londoño Cuéllar</footer>
+</main>
+
+<script>
+  const root = document.documentElement, btn = document.getElementById('lang');
+  function setLang(l) {
+    root.dataset.l = l; root.lang = l;
+    btn.textContent = l === 'en' ? 'ES' : 'EN';
+    try { localStorage.setItem('lang', l); } catch (e) {}
+  }
+  let saved = null;
+  try { saved = localStorage.getItem('lang'); } catch (e) {}
+  setLang(saved || (navigator.language.startsWith('es') ? 'es' : 'en'));
+  btn.onclick = () => setLang(root.dataset.l === 'en' ? 'es' : 'en');
+
+  // ---- windows: a cluttered desktop ----
+  // On wide screens every window is dropped at a random spot on the desk (kept MARGIN away
+  // from the edges), overlapping freely. On phones they stay stacked in reading order.
+  // All movement is a translate() from the window's resting slot, so both modes share the drag code.
+  const desk = document.getElementById('desk');
+  const wins = [...desk.children];
+  const MARGIN = 48;  // keep spawned windows this far from the desk edges
+  const TOP = 8;      // ...except the top edge, so windows start right under the header
+  const DESK_H = 1;   // desk height in viewport heights (more = windows spread further down)
+  const GRAB = 80;    // while dragging, keep at least this much of the title bar on the desk
+  const wide = matchMedia('(min-width: 760px)');
+  let zTop = 1;
+  const pos = new Map(wins.map(w => [w, { x: 0, y: 0 }]));
+  const place = w => { const p = pos.get(w); w.style.transform = p.x || p.y ? `translate(${p.x}px, ${p.y}px)` : ''; };
+  const raise = w => { w.style.zIndex = ++zTop; };
+  const rand = (lo, hi) => lo + Math.random() * Math.max(0, hi - lo);
+
+  function scatter() {
+    desk.classList.toggle('scatter', wide.matches);
+    const order = wins.slice().sort(() => Math.random() - .5); // random stacking order
+    if (!wide.matches) { wins.forEach(w => { pos.set(w, { x: 0, y: 0 }); place(w); }); return; }
+    const tallest = Math.max(...wins.map(w => w.offsetHeight));
+    const H = Math.max(innerHeight * DESK_H, tallest + TOP + MARGIN);
+    desk.style.height = H + 'px';
+    const W = desk.clientWidth;
+    const bars = []; // title bars already placed (lower in the stack)
+    order.forEach(w => {
+      const ww = w.offsetWidth, wh = w.offsetHeight;
+      // try a few spots, keep the one that hides the fewest title bars underneath
+      let best, bestHits = Infinity;
+      for (let i = 0; i < 200 && bestHits; i++) {
+        const x = rand(MARGIN, W - ww - MARGIN), y = TOP + Math.max(0, H - wh - MARGIN - TOP) * Math.random() ** 2; // squared: biased toward the top
+        const hits = bars.filter(b => x < b.x + b.w && b.x < x + ww && y < b.y + 40 && b.y < y + wh).length;
+        if (hits < bestHits) { best = { x, y }; bestHits = hits; }
+      }
+      pos.set(w, best); place(w); raise(w);
+      bars.push({ x: best.x, y: best.y, w: ww });
+    });
+  }
+
+  let d = null;
+  desk.addEventListener('pointerdown', e => {
+    const win = e.target.closest('.win');
+    if (!win) return;
+    raise(win); // clicking anywhere on a window brings it to the front
+    const bar = e.target.closest('.titlebar');
+    if (!bar || e.target.closest('button') || e.button !== 0) return;
+    const p = pos.get(win);
+    d = { win, x0: e.clientX - p.x, y0: e.clientY - p.y };
+    bar.setPointerCapture(e.pointerId);
+    win.classList.add('dragging');
+  });
+  desk.addEventListener('pointermove', e => {
+    if (!d) return;
+    let x = e.clientX - d.x0, y = e.clientY - d.y0;
+    if (wide.matches) { // keep the title bar reachable
+      x = Math.min(Math.max(x, GRAB - d.win.offsetWidth), desk.clientWidth - GRAB);
+      y = Math.min(Math.max(y, 0), desk.clientHeight - 40);
+    }
+    pos.set(d.win, { x, y });
+    place(d.win);
+  });
+  const drop = () => { if (d) d.win.classList.remove('dragging'); d = null; };
+  desk.addEventListener('pointerup', drop);
+  desk.addEventListener('pointercancel', drop);
+
+  // keyboard: focus a title bar, then arrow keys nudge the window
+  const step = { ArrowUp: [0, -20], ArrowDown: [0, 20], ArrowLeft: [-20, 0], ArrowRight: [20, 0] };
+  desk.addEventListener('keydown', e => {
+    const bar = e.target.closest('.titlebar');
+    if (!bar || e.target !== bar || !step[e.key]) return;
+    e.preventDefault();
+    const win = bar.parentElement, p = pos.get(win);
+    pos.set(win, { x: p.x + step[e.key][0], y: p.y + step[e.key][1] });
+    place(win); raise(win);
+  });
+
+  desk.addEventListener('click', e => {
+    const b = e.target.closest('.titlebar button');
+    if (!b) return;
+    const win = b.closest('.win');
+    if (b.dataset.act === 'min') win.classList.toggle('min');
+    if (b.dataset.act === 'max') win.classList.remove('min');
+    if (b.dataset.act === 'close') win.classList.add('closed');
+  });
+  // menu links reopen closed/minimised windows and bring them to the front
+  document.querySelectorAll('nav a, a[href^="#"]').forEach(a => a.addEventListener('click', () => {
+    const w = document.getElementById(a.hash.slice(1))?.closest('.win');
+    if (w) { w.classList.remove('closed', 'min'); raise(w); }
+  }));
+  document.getElementById('reset').onclick = () => { wins.forEach(w => w.classList.remove('min', 'closed')); scatter(); };
+  wide.addEventListener('change', scatter); // ponytail: no re-scatter on plain resize; "shuffle" handles it
+  scatter();
+</script>
+</body>
+</html>
